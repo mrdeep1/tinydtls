@@ -23,7 +23,7 @@ AC_PATH_PROG(DOXYGEN, doxygen, [:])
 AC_PATH_PROG(ETAGS, etags, [/bin/false])
 
 # Make configure happy
-test -e install-sh || touch install-sh
+test -e "$srcdir/install-sh" || touch "$srcdir/install-sh"
 
 # Checks for programs.
 AC_PROG_MAKE_SET
