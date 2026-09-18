@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: setup
         run: |
-          sudo apt-get update && sudo apt-get install -y libcunit1-dev libtool libtool-bin exuberant-ctags valgrind autoconf-archive
+          sudo apt-get update && sudo apt-get install -y libcunit1-dev libtool libtool-bin exuberant-ctags valgrind
           ./autogen.sh
       - name: configure
         run: |
