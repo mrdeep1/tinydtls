@@ -22,7 +22,7 @@ jobs:
       matrix:
         CC: ["gcc", "clang" ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: setup
         run: |
           sudo apt-get update && sudo apt-get install -y libcunit1-dev libtool libtool-bin exuberant-ctags valgrind
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
     - name: Build tinydtls
       run: |
         cmake -E make_directory build_test
@@ -59,7 +59,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
     - name: Build tinydtls
       run: |
         cmake -E make_directory build_test
@@ -72,7 +72,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
     - name: Build tinydtls
       run: |
         cmake -E make_directory build_test
