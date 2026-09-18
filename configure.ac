@@ -30,6 +30,7 @@ test -e install-sh || touch install-sh
 AC_PROG_MAKE_SET
 AC_PROG_CC
 AC_PROG_RANLIB
+AC_CONFIG_MACRO_DIR([m4])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR], [AR=ar])
 
 AC_C_BIGENDIAN
