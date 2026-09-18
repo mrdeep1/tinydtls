@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (c) 2011, 2012, 2013, 2014, 2015 Olaf Bergmann (TZI) and others.
+ * Copyright (c) 2011-2026 Olaf Bergmann (TZI) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
@@ -142,7 +142,7 @@ encrypt(rijndael_ctx *ctx, size_t L, unsigned long counter,
 	unsigned char A[DTLS_CCM_BLOCKSIZE],
 	unsigned char S[DTLS_CCM_BLOCKSIZE]) {
 
-  static unsigned long counter_tmp;
+  static size_t counter_tmp;
 
   SET_COUNTER(A, L, counter, counter_tmp);    
   rijndael_encrypt(ctx, A, S);
@@ -169,7 +169,7 @@ dtls_ccm_encrypt_message(rijndael_ctx *ctx, size_t M, size_t L,
 			 unsigned char *msg, size_t lm, 
 			 const unsigned char *aad, size_t la) {
   size_t i, len;
-  unsigned long counter_tmp;
+  size_t counter_tmp;
   unsigned long counter = 1; /* \bug does not work correctly on ia32 when
 			             lm >= 2^16 */
   unsigned char A[DTLS_CCM_BLOCKSIZE]; /* A_i blocks for encryption input */
@@ -234,7 +234,7 @@ dtls_ccm_decrypt_message(rijndael_ctx *ctx, size_t M, size_t L,
 			 const unsigned char *aad, size_t la) {
   
   size_t len;
-  unsigned long counter_tmp;
+  size_t counter_tmp;
   unsigned long counter = 1; /* \bug does not work correctly on ia32 when
 			             lm >= 2^16 */
   unsigned char A[DTLS_CCM_BLOCKSIZE]; /* A_i blocks for encryption input */
