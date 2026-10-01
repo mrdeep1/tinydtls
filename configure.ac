@@ -43,6 +43,7 @@ CFLAGS="${CFLAGS} -fPIC"
 WARNING_CFLAGS="\
 -pedantic \
 -Wall \
+-Wcast-qual \
 -Wextra \
 -Wformat-security \
 -Winline \
@@ -55,6 +56,7 @@ WARNING_CFLAGS="\
 -Wswitch-default \
 -Wswitch-enum \
 -Wunused \
+-Wwrite-strings \
 "
 
 AC_SUBST([WARNING_CFLAGS])
