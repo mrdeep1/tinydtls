@@ -65,7 +65,7 @@ if(MINGW OR WIN32)
 endif()
 target_compile_options(dtls-client PUBLIC ${COMPILE_OPTIONS})
 
-if(NOT MSVC AND NOT MINGW)
+if(NOT MINGW)
     add_executable(testdriver unit-tests/testdriver.c unit-tests/test_ccm.c unit-tests/test_ecc.c unit-tests/test_prf.c)
     target_link_libraries(testdriver LINK_PUBLIC tinydtls)
     if(APPLE)

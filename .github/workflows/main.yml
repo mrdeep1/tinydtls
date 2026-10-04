@@ -93,6 +93,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+    - name: Setup
+      run: |
+        vcpkg install cunit
     - name: Build tinydtls
       run: |
         cmake -E make_directory build_test
@@ -112,6 +115,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+    - name: Setup
+      run: |
+        vcpkg install cunit
     - name: Build tinydtls
       run: |
         cmake -E make_directory build_test
@@ -129,6 +135,9 @@ jobs:
         shell: msys2 {0}
     steps:
       - uses: actions/checkout@v6
+      - name: Setup
+        run: |
+          vcpkg install cunit
       - name: Environment Setup
         shell: bash
         run: |
