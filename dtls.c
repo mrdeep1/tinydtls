@@ -1357,7 +1357,14 @@ dtls_check_tls_extension(dtls_peer_t *peer,
         break;
 #if (DTLS_MAX_CID_LENGTH > 0)
       case TLS_EXT_CONNECTION_ID:
-        if (!is_client_hello && !peer->handshake_params->user_parameters.support_cid) {
+        if (is_client_hello) {
+          /* Only the client side of CID is implemented: the ServerHello
+           * never echoes the extension, so a CID offered by a client must
+           * be ignored (RFC 9146, section 3). Storing it would make this
+           * peer send tls12_cid records that were never negotiated. */
+          break;
+        }
+        if (!peer->handshake_params->user_parameters.support_cid) {
           dtls_warn("connection id was not sent by client!\n");
           goto error;
         }
@@ -1822,6 +1829,10 @@ dtls_prepare_record(dtls_peer_t *peer, dtls_security_parameters_t *security,
 #if (DTLS_MAX_CID_LENGTH > 0)
     cid_length = security->write_cid_length;
     if (cid_length > 0) {
+      if (*rlen < DTLS_RH_LENGTH + cid_length) {
+        dtls_debug("dtls_prepare_record: send buffer too small\n");
+        return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
+      }
       /* add cid to record header */
       memcpy(p - sizeof(uint16_t), security->write_cid, cid_length);
       p += cid_length;
@@ -1869,7 +1880,7 @@ dtls_prepare_record(dtls_peer_t *peer, dtls_security_parameters_t *security,
    	            } CCMNonceExample;
     */
 
-    if (*rlen < DTLS_RH_LENGTH + 8) {
+    if (*rlen < DTLS_RH_LENGTH + cid_length + 8) {
       dtls_debug("dtls_prepare_record: send buffer too small\n");
       return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
     }
@@ -1879,7 +1890,7 @@ dtls_prepare_record(dtls_peer_t *peer, dtls_security_parameters_t *security,
 
     for (i = 0; i < data_array_len; i++) {
       /* check the minimum that we need for packets that are not encrypted */
-      if (*rlen < res + DTLS_RH_LENGTH + data_len_array[i]) {
+      if (*rlen < res + DTLS_RH_LENGTH + cid_length + data_len_array[i]) {
         dtls_debug("dtls_prepare_record: send buffer too small\n");
         return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
       }
@@ -1901,6 +1912,12 @@ dtls_prepare_record(dtls_peer_t *peer, dtls_security_parameters_t *security,
 #if (DTLS_MAX_CID_LENGTH > 0)
     if (cid_length > 0) {
       /* RFC 9146 */
+
+      /* room for the inner content type, the CID and the AEAD tag */
+      if (*rlen < res + 1 + DTLS_RH_LENGTH + cid_length + mac_len) {
+        dtls_debug("dtls_prepare_record: send buffer too small\n");
+        return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
+      }
 
       /* inner content type */
       *p = *sendbuf;
@@ -1939,7 +1956,7 @@ dtls_prepare_record(dtls_peer_t *peer, dtls_security_parameters_t *security,
     dtls_debug_dump("adata:", A_DATA, a_data_len);
     dtls_debug_dump("message:", start, res);
 
-    if (*rlen < res + DTLS_RH_LENGTH + mac_len) {
+    if (*rlen < res + DTLS_RH_LENGTH + cid_length + mac_len) {
       dtls_debug("dtls_prepare_record: send buffer too small\n");
       return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
     }
